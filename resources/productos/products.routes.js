@@ -2,7 +2,10 @@ const express = require('express')
 const uuidv4 = require('uuid/v4');
 
 
-const validateProduct = require('./products.validate');
+const validates = require('./products.validate');
+
+const validateProduct = validates.validateProduct;
+// const validateUpdateDelete = validates.validateUpdateDelete;
 
 let products = require('../../db').products;
 
@@ -19,9 +22,12 @@ productsRoutes.post('/', validateProduct, (req, res) => {
 })
 
 ///products/098as908asd098asd089
-productsRoutes.put('/:id', (req, res) => {
+productsRoutes.put('/:id',(req, res) => {
   const filterProduct = products.filter(product => product.id === req.params.id)[0];
-
+  
+  if (!(req.params.owner === filterProduct.owner) || validation.error){
+    return res.status(403).send('Owner incorrecto') 
+  }
   const updatedProduct = { ...filterProduct, ...req.body  };
 
   res.json(updatedProduct);
@@ -33,11 +39,17 @@ productsRoutes.delete('/:id', (req, res) => {
   const filterProduct = products.filter(product => product.id === req.params.id)[0];
 
   const productsWithoutSelected = products.filter(product => product.id !== req.params.id)[0];
-
+  
+  if (!(req.params.owner === filterProduct.owner) || validation.error){
+    return res.status(403).send('Owner incorrecto') 
+  }
   products = productsWithoutSelected;
 
   res.json(filterProduct);
 });
 
 
-module.exports = productsRoutes;
+module.exports = {
+  productsRoutes: productsRoutes,
+  products: products
+};
