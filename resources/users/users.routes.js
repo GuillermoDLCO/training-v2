@@ -36,7 +36,7 @@ usersRoutes.delete('/:id', (req, res) => {
 
   users = usersWithoutSelected;
 
-  res.json(filterUser);
+  res.json(users);
 });
 
 
