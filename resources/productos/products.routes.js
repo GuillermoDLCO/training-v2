@@ -43,7 +43,7 @@ productsRoutes.delete('/:id', (req, res) => {
   if (!(req.body.owner === filterProduct.owner)){
     return res.status(403).send('Usuario no tiene permiso.') 
   }
-  const productsWithoutSelected = products.filter(product => product.id !== req.params.id)[0];
+  const productsWithoutSelected = products.filter(product => product.id !== req.params.id);
   
   products = productsWithoutSelected;
 

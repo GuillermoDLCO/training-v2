@@ -1,20 +1,65 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+
+const logger = require('./resources/utils/logger');
+
+const morgan = require('morgan');
+
+
+
+
+const passport = require('passport');
+const authJWT = require('passport-jwt');
+
+
+// passport.use(authJWT)
+
+const jwtOptions = {
+  secretOrKey: 'SECRET_KEY',
+  jwtFromRequest: authJWT.ExtractJwt.fromAuthHeaderAsBearerToken()
+}
+
+
+let jwtStrategy = new authJWT.Strategy({ ...jwtOptions },(jwtPayload, next) => {
+  // usuarioDelPayLoad
+  console.log(jwtPayload)
+  next(null, {
+    id: jwtPayload.id
+  });
+})
+
+passport.use(jwtStrategy)
+
 const productsRoutes = require('./resources/productos/products.routes');
 const usersRoutes = require('./resources/users/users.routes');
 
 const app = express();
 
 app.use(bodyParser.json())
+
+app.use(morgan('short', {
+  stream: {
+    write: message => logger.info(message.trim()),
+  }
+}));
+
 app.use('/products', productsRoutes);
+
 app.use('/users', usersRoutes);
 
 
+// SON EJEMPLOS
+// logger.log('log', 'Hello distributed log files!');
+// logger.info('info', 'Esto es un logger info');
+// logger.warn('WARN');
+// logger.error('ERROR');
 
 /************************** */
 // READ
-app.get('/', (req, res) => {
+//  passport.authenticate('basic', { session: false })
+app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+  console.log(req.user)
   res.status(200).send('Hola papu');
 });
 
@@ -25,10 +70,10 @@ app.post('/', (req, res) => {
 })
 
 // UPDATE
-app.put('/', () => {})
+app.put('/', () => { })
 
 // DESTROY
-app.delete('/', () => {})
+app.delete('/', () => { })
 
 // CRUD
 // Create

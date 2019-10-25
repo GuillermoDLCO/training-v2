@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi')
 
 const userSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
-  nickname: Joi.string().min(3).max(15).required()
+  nickname: Joi.string().min(3).max(15).required(),
 });
 
 
